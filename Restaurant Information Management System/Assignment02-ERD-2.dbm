@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.1" last-position="0,21" last-zoom="1"
+	 default-schema="public" default-owner="postgres">
+<role name="Admin"
+      inherit="true"
+      encrypted="true"
+      password="********">
+</role>
+
+<database name="zuoye" encoding="UTF8" lc-collate="English_Canada.1252" lc-ctype="English_Canada.1252" is-template="false" allow-conns="true">
+	<role name="postgres"/>
+	<tablespace name="pg_default"/>
+</database>
+
+<schema name="public" rect-visible="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="chain_location">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="160" y="100"/>
+	<column name="territory">
+		<type name="character" length="2"/>
+	</column>
+	<column name="city">
+		<type name="character varying" length="20"/>
+	</column>
+	<column name="restaurant_id" not-null="true">
+		<type name="character" length="3"/>
+	</column>
+	<constraint name="restaurant_id_pk" type="pk-constr" table="public.chain_location">
+		<columns names="restaurant_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="employee">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="460" y="100"/>
+	<column name="name">
+		<type name="character varying" length="20"/>
+	</column>
+	<column name="social_number" not-null="true">
+		<type name="character" length="9"/>
+	</column>
+	<constraint name="social_number_pk" type="pk-constr" table="public.employee">
+		<columns names="social_number" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="dish_category">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="140" y="260"/>
+	<column name="category_id" not-null="true">
+		<type name="character" length="3"/>
+	</column>
+	<column name="category">
+		<type name="character" length="10"/>
+	</column>
+	<constraint name="category_id_pk" type="pk-constr" table="public.dish_category">
+		<columns names="category_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="menu">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="140" y="460"/>
+	<column name="category_id">
+		<type name="character" length="3"/>
+	</column>
+	<column name="dish">
+		<type name="character varying" length="20"/>
+	</column>
+	<column name="dish_id" not-null="true">
+		<type name="character" length="4"/>
+	</column>
+	<constraint name="dish_id_pk" type="pk-constr" table="public.menu">
+		<columns names="dish_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="invoice">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="560" y="340"/>
+	<column name="invoice_id" not-null="true">
+		<type name="character" length="9"/>
+	</column>
+	<column name="invoice_date">
+		<type name="date" length="0"/>
+	</column>
+	<column name="restaurant_id">
+		<type name="character" length="3"/>
+	</column>
+	<column name="invoice_dish_id" not-null="true">
+		<type name="character" length="4"/>
+	</column>
+	<column name="service_provider_socialnumber">
+		<type name="character" length="9"/>
+	</column>
+	<column name="amount">
+		<type name="double precision" length="0"/>
+	</column>
+	<column name="customer_name">
+		<type name="character varying" length="30"/>
+	</column>
+	<constraint name="invoice_pk" type="pk-constr" table="public.invoice">
+		<columns names="invoice_id,invoice_dish_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="amount" type="ck-constr" table="public.invoice">
+			<expression><![CDATA[((amount >= (1)::double precision) AND (amount <= (10000)::double precision))]]></expression>
+	</constraint>
+</table>
+
+<textbox name="AS2" font-size="9">
+	<position x="720" y="100"/>
+	<comment><![CDATA[Project : CST 8215 300
+Model : PostgreSQL 9.5
+Author : Boyu Li
+Company : Algonquin College
+Date of Creasion : 2022-04-05
+Assignment : Assignment 02
+
+]]></comment>
+</textbox>
+
+<constraint name="category_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.dish_category" table="public.menu">
+	<columns names="category_id" ref-type="src-columns"/>
+	<columns names="category_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="restaurant_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.chain_location" table="public.invoice">
+	<columns names="restaurant_id" ref-type="src-columns"/>
+	<columns names="restaurant_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="invoice_dish_id_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.menu" table="public.invoice">
+	<columns names="invoice_dish_id" ref-type="src-columns"/>
+	<columns names="dish_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="service_provider_socialnumber_fk" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.employee" table="public.invoice">
+	<columns names="service_provider_socialnumber" ref-type="src-columns"/>
+	<columns names="social_number" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_menu_dish_category" type="relfk"
+	 custom-color="#83af1f"
+	 src-table="public.menu"
+	 dst-table="public.dish_category" reference-fk="category_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_invoice_chain_location" type="relfk"
+	 custom-color="#5aa578"
+	 src-table="public.invoice"
+	 dst-table="public.chain_location" reference-fk="restaurant_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_invoice_menu" type="relfk"
+	 custom-color="#4b3e56"
+	 src-table="public.invoice"
+	 dst-table="public.menu" reference-fk="invoice_dish_id_fk"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_invoice_employee" type="relfk"
+	 custom-color="#9ac721"
+	 src-table="public.invoice"
+	 dst-table="public.employee" reference-fk="service_provider_socialnumber_fk"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>
